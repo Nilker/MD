@@ -27,7 +27,7 @@ var app = new Vue({
 
 ```
 
-![](D:\Desktop\md\Vue\img\lifecycle.png)
+![](/img/lifecycle.png)
 
 
 
