@@ -27,7 +27,7 @@ var app = new Vue({
 
 ```
 
-![](/img/lifecycle.png)
+![](https://github.com/Nilker/MD/blob/master/Vue/img/lifecycle.png)
 
 
 
