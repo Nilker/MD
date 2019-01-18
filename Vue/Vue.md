@@ -329,3 +329,415 @@ data: {
 详见Class 绑定，将class 替换为Style
 
 # 五、条件渲染
+
+## v-if
+
+```html
+ <h1 v-if="true">Yes</h1>
+ <h1 v-else>No</h1>
+```
+
+## v-else
+
+你可以使用 `v-else` 指令来表示 `v-if` 的“else 块”：
+
+```html
+<div v-if="Math.random() > 0.5">
+  Now you see me
+</div>
+<div v-else>
+  Now you don't
+</div>
+```
+
+`v-else` 元素必须紧跟在带 `v-if` 或者 `v-else-if` 的元素的后面，否则它将不会被识别。
+
+## v-else-if
+
+```html
+<div v-if="type === 'A'">
+  A
+</div>
+<div v-else-if="type === 'B'">
+  B
+</div>
+<div v-else-if="type === 'C'">
+  C
+</div>
+<div v-else>
+  Not A/B/C
+</div>
+```
+
+类似于 `v-else`，`v-else-if` 也必须紧跟在带 `v-if` 或者 `v-else-if` 的元素之后。
+
+## v-show
+
+另一个用于根据条件展示元素的选项是 `v-show` 指令。用法大致一样：
+
+```html
+<h1 v-show="ok">Hello!</h1>
+```
+
+# 六、列表渲染
+
+## v-for
+
+在 `v-for` 块中，我们拥有对父作用域属性的完全访问权限。`v-for` 还支持一个可选的第二个参数为当前项的索引
+
+```html
+<ul id="example-2">
+  <li v-for="(item, index) in/Of items">
+    {{ parentMessage }} - {{ index }} - {{ item.message }}
+  </li>
+</ul>
+```
+
+```js
+var example2 = new Vue({
+  el: '#example-2',
+  data: {
+    parentMessage: 'Parent',
+    items: [
+      { message: 'Foo' },
+      { message: 'Bar' }
+    ]
+  }
+})
+```
+
+结果：Parent-0-Foo
+
+​	   Parent-1-Bar
+
+## 对象v-for
+
+```html
+<ul id="v-for-object" class="demo">
+  <li v-for="value in object">
+    {{ value }}
+  </li>
+</ul>
+```
+
+```js
+new Vue({
+  el: '#v-for-object',
+  data: {
+    object: {
+      firstName: 'John',
+      lastName: 'Doe',
+      age: 30
+    }
+  }
+})
+```
+
+结果：	John
+
+​		Doe
+
+​		30		
+
+```html
+<div v-for="(value, key, index) in object">
+  {{ index }}. {{ key }}: {{ value }}
+</div>
+```
+
+结果：	0.firstName:John
+
+​		1.lastName:Doe
+
+​		2.age:30	
+
+# 七、事件处理
+
+## v-on 监听事件
+
+```html
+ <button v-on:click="counter += 1">Add 1</button>
+```
+
+## 事件处理---方法
+
+```html
+<div id="example-2">
+  <!-- `greet` 是在下面定义的方法名 -->
+  <button v-on:click="greet">Greet</button>
+</div>
+```
+
+```js
+var example2 = new Vue({
+  el: '#example-2',
+  data: {
+    name: 'Vue.js'
+  },
+  // 在 `methods` 对象中定义方法
+  methods: {
+    greet: function (event) {
+      // `this` 在方法里指向当前 Vue 实例
+      alert('Hello ' + this.name + '!')
+      // `event` 是原生 DOM 事件
+      if (event) {
+        alert(event.target.tagName)
+      }
+    }
+  }
+})
+
+// 也可以用 JavaScript 直接调用方法
+example2.greet() // => 'Hello Vue.js!'
+```
+
+## 事件处理---方法参数
+
+```html
+<div id="example-3">
+  <button v-on:click="say('hi')">Say hi</button>
+  <button v-on:click="say('what')">Say what</button>
+</div>
+```
+
+```js
+new Vue({
+  el: '#example-3',
+  methods: {
+    say: function (message) {
+      alert(message)
+    }
+  }
+})
+```
+
+## 事件修饰符
+
+[e.preventDefault()与e.stopPropagation()的区别](https://blog.csdn.net/xiaobing_hope/article/details/50674998)
+
+**e.stopPropagation()阻止事件冒泡**
+
+**e.preventDefault()阻止事件默认行为。**
+
+return false除了阻止默认行为之外，还会阻止事件冒泡。如果手上有一份jquery源代码的话，可查看其中有如下代码：
+
+if (ret===false){
+　　event.preventDefault();
+　　event.stopPropagation();
+}
+
+```html
+<!-- 阻止单击事件继续传播 -->
+<a v-on:click.stop="doThis"></a>
+
+<!-- 提交事件不再重载页面 -->
+<form v-on:submit.prevent="onSubmit"></form>
+
+<!-- 修饰符可以串联 -->
+<a v-on:click.stop.prevent="doThat"></a>
+
+<!-- 只有修饰符 -->
+<form v-on:submit.prevent></form>
+
+<!-- 添加事件监听器时使用事件捕获模式 -->
+<!-- 即元素自身触发的事件先在此处理，然后才交由内部元素进行处理 -->
+<div v-on:click.capture="doThis">...</div>
+
+<!-- 只当在 event.target 是当前元素自身时触发处理函数 -->
+<!-- 即事件不是从内部元素触发的 -->
+<div v-on:click.self="doThat">...</div>
+
+2.14新增
+<!-- 点击事件将只会触发一次 -->
+<a v-on:click.once="doThis"></a>
+
+<!-- 滚动事件的默认行为 (即滚动行为) 将会立即触发 -->
+<!-- 而不会等待 `onScroll` 完成  -->
+<!-- 这其中包含 `event.preventDefault()` 的情况 -->
+<div v-on:scroll.passive="onScroll">...</div>
+```
+
+## 按键修饰符
+
+```html
+<!-- 只有在 `keyCode` 是 13 时调用 `vm.submit()` -->
+<input v-on:keyup.13="submit">
+```
+
+记住所有的 `keyCode` 比较困难，所以 Vue 为最常用的按键提供了别名：
+
+```html
+全部的按键别名：
+
+.enter
+.tab
+.delete (捕获“删除”和“退格”键)
+.esc
+.space
+.up
+.down
+.left
+.right
+可以通过全局 config.keyCodes 对象自定义按键修饰符别名：
+
+// 可以使用 `v-on:keyup.f1`
+Vue.config.keyCodes.f1 = 112<!-- 同上 -->
+<input v-on:keyup.enter="submit">
+
+<!-- 缩写语法 -->
+<input @keyup.enter="submit">
+```
+
+# 八、表单输入绑定
+
+## 基础用法
+
+```html
+ <!-- 文本 -->
+            <input v-model="message" placeholder="请修改">
+            <p>message 内容为：{{message}}</p>
+            <br>
+
+            <!-- 多行文本 -->
+            <textarea v-model="message" placeholder="多填写"></textarea>
+            <br>
+
+            <!-- 复选框 -->
+            <input type="checkbox" id="chk" v-model="checked">
+            <label for="chk">{{checked}}</label>
+            <br>
+
+            <div id='example-3'>
+                <input type="checkbox" id="jack" value="Jack" v-model="checkedNames">
+                <label for="jack">Jack</label>
+                <input type="checkbox" id="john" value="John" v-model="checkedNames">
+                <label for="john">John</label>
+                <input type="checkbox" id="mike" value="Mike" v-model="checkedNames">
+                <label for="mike">Mike</label>
+                <br>
+                <span>Checked names: {{ checkedNames }}</span>
+            </div>
+            <br>
+
+            <!-- 单选按钮 -->
+            <div>
+                <input type="radio" id="one" value="One" v-model="picked">
+                <label for="one">One</label>
+                <br>
+                <input type="radio" id="two" value="Two" v-model="picked">
+                <label for="two">Two</label>
+                <br>
+                <span>Picked: {{ picked }}</span>
+            </div>
+
+            <!-- 选择框 -->
+            <div>
+                <select v-model="selected">
+                    <option disabled value="">请选择</option>
+                    <option>A</option>
+                    <option>B</option>
+                    <option>C</option>
+                  </select>
+                  <span>Selected: {{ selected }}</span>
+            </div>
+
+            <!-- 多选 -->
+            <div>
+                <select v-model="selecteds" multiple style="width:50px">                    
+                    <option>A</option>
+                    <option>B</option>
+                    <option>C</option>
+                  </select>
+                  <span>selecteds: {{ selecteds }}</span>
+            </div>
+            <!-- 动态渲染select -->
+            <div>
+                <select v-model="selectedddd">
+                    <option  v-for="(option, index) in options" :key="index" v-bind:value="option.value" >{{option.text}}---{{index}}</option>
+                </select>
+                <span>selectedddd:{{selectedddd}}</span>
+            </div>
+
+```
+
+```js
+var data = {
+    seen: true,
+    todos: [
+        { text: '学习 JavaScript' },
+        { text: '学习 Vue' },
+        { text: '整个牛项目' }
+    ],
+    foo: 122,
+    message: 'Hello',
+    checked: true,
+    checkedNames: [],
+    picked: '',
+    selected: '',
+    selecteds: [],
+    
+    selectedddd:'C',
+    options: [
+        { text: 'One', value: 'A' },
+        { text: 'Two', value: 'B' },
+        { text: 'Three', value: 'C' }
+    ]
+}
+```
+
+## 值绑定
+
+```html
+<!-- 当选中时，`picked` 为字符串 "a" -->
+<input type="radio" v-model="picked" value="a">
+
+<!-- `toggle` 为 true 或 false -->
+<input type="checkbox" v-model="toggle">
+
+<!-- 当选中第一个选项时，`selected` 为字符串 "abc" -->
+<select v-model="selected">
+  <option value="abc">ABC</option>
+</select>
+
+<!--复选框-->
+<input
+  type="checkbox"
+  v-model="toggle"
+  true-value="yes"
+  false-value="no"
+>
+// 当选中时
+vm.toggle === 'yes'
+// 当没有选中时
+vm.toggle === 'no'
+
+<!--单选按钮-->
+<input type="radio" v-model="pick" v-bind:value="a">
+// 当选中时
+vm.pick === vm.a
+
+<!--选择框的选项-->
+<select v-model="selected">
+    <!-- 内联对象字面量 -->
+  <option v-bind:value="{ number: 123 }">123</option>
+</select>
+// 当选中时
+typeof vm.selected // => 'object'
+vm.selected.number // => 123
+```
+
+## 修饰符 --用户输入 前提条件
+
+```html
+<!-- 在“change”时而非“input”时更新 -->
+<input v-model.lazy="msg" >
+
+如果想自动将用户的输入值转为数值类型
+<input v-model.number="age" type="number">
+
+如果要自动过滤用户输入的首尾空白字符
+<input v-model.trim="msg">
+```
+
+# 九、组件基础
+
