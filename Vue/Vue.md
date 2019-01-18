@@ -741,3 +741,61 @@ vm.selected.number // => 123
 
 # 九、组件基础
 
+## 注册组件
+
+### 组件名--2种
+
+kebab-case:
+
+```js
+Vue.component('my-component-name', { /* ... */ })
+```
+
+PascalCase:
+
+```js
+Vue.component('MyComponentName', { /* ... */ })
+```
+
+### 全局注册
+
+```js
+Vue.component('my-component-name', {
+  // ... 选项 ...
+})
+```
+
+### 局部祖册
+
+```js
+var ComponentA = { /* ... */ }
+var ComponentB = { /* ... */ }
+var ComponentC = { /* ... */ }
+```
+
+然后在 `components` 选项中定义你想要使用的组件：
+
+```js
+new Vue({
+  el: '#app',
+  components: {
+    'component-a': ComponentA,
+    'component-b': ComponentB
+  }
+})
+```
+
+对于 `components` 对象中的每个属性来说，其属性名就是自定义元素的名字，其属性值就是这个组件的选项对象。
+
+注意**局部注册的组件在其子组件中不可用**。例如，如果你希望 `ComponentA` 在 `ComponentB` 中可用，则你需要这样写：
+
+```js
+var ComponentA = { /* ... */ }
+
+var ComponentB = {
+  components: {
+    'component-a': ComponentA
+  },
+  // ...
+}
+```
