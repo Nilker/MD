@@ -17,3 +17,12 @@
   }
   ```
 
+
+
+
+
+页面JS缺失问题解决办法：
+
+## Running The Application
+
+Before running the project, we need to run a npm task to bundle and minify the CSS and JavaScript files. In order to do that, we can open a command prompt, navigate to root directory of ***.Web.Mvc** project and run **npm run create-bundles** command. This command should be run when a new npm package is being added to the solution.

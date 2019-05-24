@@ -17,5 +17,17 @@ AND TrackType='QB_08'
 AND	Year=2019
 AND	Month=4
 
-
+--跟踪方式
 SELECT * FROM dbo.BudgetFieldTrackType
+
+--OA流水
+SELECT * FROM dbo.OABudgetDetails ORDER BY RecID DESC
+
+--Crm项目使用
+SELECT * FROM dbo.BudgetIncreaseDeduction  ORDER BY RecID DESC
+
+--管理员调整
+SELECT * FROM dbo.BudgetManagerIncreaseDeduction ORDER BY RecID DESC
+
+--上月残值
+SELECT * FROM BudgetSurplusDetails ORDER BY RecID DESC
