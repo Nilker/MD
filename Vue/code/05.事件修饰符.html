@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="node_modules/vue/dist/vue.js"></script>
+    <style>
+        .inner {
+            height: 150px;
+            background-color: darkcyan
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div class="inner" @click.self="divClick" >
+            <input type="button" value="点他" @click.stop="btnClick">
+        </div>
+
+        <a href="http://www.baidu.com"  @click.prevent.once="linkClick" >百度</a>
+    </div>
+    <script>
+        var vm = new Vue({
+            el: '#app',
+            data: {},
+            methods: {
+                divClick(){
+                    console.log("触发div点击")
+                },
+                btnClick(){
+                    console.log("触发btn点击")// 由于冒泡机制，先btn--->div，两个都触发【@click.stop 会阻止冒泡，只执行btn】
+                },
+                linkClick(){
+                    console.log("触发link点击")
+                }
+            },
+        });
+    </script>
+</body>
+
+</html>
