@@ -35,11 +35,11 @@ Apollo支持4个维度管理Key-Value格式的配置：
   2. 配置中心通知Apollo客户端有配置更新
   3. Apollo客户端从配置中心拉取最新的配置、更新本地配置并通知到应用
 
-  ![](D:\git\MD\docker\img\basic-architecture.png)
+  ![](img/basic-architecture.png)
 
-  ![](D:\git\MD\docker\img\apollo-home-screenshot.png)
+  ![](img/apollo-home-screenshot.png)
 
-![](D:\git\MD\docker\img\aHR0cDovL2kubHVwZi5jbi9GbUtoUktFakd1WmIzX0ZSZWZKWEJjLXZVNEVB.png)
+![](img/aHR0cDovL2kubHVwZi5jbi9GbUtoUktFakd1WmIzX0ZSZWZKWEJjLXZVNEVB.png)
 
 上图简要描述了Apollo的总体设计，我们可以从下往上看：
 
@@ -272,7 +272,7 @@ apollo-configservice     | Wed Dec  2 16:37:58 CST 2020 Server started in 220 se
 
 [Apollo配置中心] http://localhost:8070/  默认管理员用户名:`apollo` 密码: `admin`
 
-![](D:\git\MD\docker\img\微信截图_20201202201246.png)
+![](img/微信截图_20201202201246.png)
 
 - ## 修改环境配置文件apollo-env.properties
 
@@ -288,7 +288,7 @@ fat.meta=http://172.20.0.14:8080
 
 找到`系统参数`配置并查找`apollo.portal.envs`配置，并将其修改为你需要支持的多个环境，记得用英文的逗号隔开
 
-![](D:\git\MD\docker\img\aHR0cDovL2kubHVwZi5jbi9GbllwUUdpdnd3V1l2R1h4NFUwUFpLM21DdTY1.png)
+![](img/aHR0cDovL2kubHVwZi5jbi9GbllwUUdpdnd3V1l2R1h4NFUwUFpLM21DdTY1.png)
 
 - ## 重启apollo-portal服务
 
@@ -299,7 +299,7 @@ fat.meta=http://172.20.0.14:8080
 
   
 
-![](D:\git\MD\docker\img\微信截图_20201202201246.png)
+![](img/微信截图_20201202201246.png)
 
 
 
