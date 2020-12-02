@@ -1,3 +1,5 @@
+
+
 # docker-compose
 
 标签（空格分隔）： docker
@@ -30,6 +32,29 @@ WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "WebCore3.dll"]
 ```
+
+or配置
+
+```yaml
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build-env
+WORKDIR /app
+
+# Copy csproj and restore as distinct layers
+COPY *.csproj ./
+RUN dotnet restore
+
+# Copy everything else and build
+COPY . ./
+RUN dotnet publish -c Release -o out
+
+# Build runtime image
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1
+WORKDIR /app
+COPY --from=build-env /app/out .
+ENTRYPOINT ["dotnet", "WebCore3.dll"]
+```
+
+
 
 构建镜像
 
@@ -306,3 +331,74 @@ docker-compose unpause [SERVICE...]
 
 
 ### 三、docker-compose模板文件
+
+Docker-Compose 标准模板包含：
+
+​	version 、**services**、**networks**
+
+```yaml
+version: '3.4'
+
+services:
+  web1:
+    image: webcore33  #是指定服务的镜像名称或镜像ID。如果镜像在本地不存在，Compose将会尝试拉取镜像
+    container_name: "web1"  #容器名称格式是：<项目名称><服务名称><序号>可以自定义项目名称、服务名称，但如果想完全控制容器的命名，可以使用标签指定
+    build: #服务除了可以基于指定的镜像，还可以基于一份Dockerfile，在使用up启动时执行构建任务，构建标签是build，可以指定Dockerfile所在文件夹的路径。Compose将会利用Dockerfile自动构建镜像，然后使用镜像启动服务容器
+      context: .  #设定上下文根目录
+      dockerfile: WebCore3/Dockerfile  #指定Dockerfile      
+    ports:  #HOST:CONTAINER格式或者只是指定容器的端口
+      - 8801:80
+
+  web2:
+    image: webcore33  #是指定服务的镜像名称或镜像ID。如果镜像在本地不存在，Compose将会尝试拉取镜像
+    container_name: "web2"  #容器名称格式是：<项目名称><服务名称><序号>可以自定义项目名称、服务名称，但如果想完全控制容器的命名，可以使用标签指定
+    build: #服务除了可以基于指定的镜像，还可以基于一份Dockerfile，在使用up启动时执行构建任务，构建标签是build，可以指定Dockerfile所在文件夹的路径。Compose将会利用Dockerfile自动构建镜像，然后使用镜像启动服务容器
+      context: .  #设定上下文根目录
+      dockerfile: WebCore3/Dockerfile  #指定Dockerfile      
+    ports:  #HOST:CONTAINER格式或者只是指定容器的端口
+      - 8802:80
+
+  web3:
+    image: webcore33  #是指定服务的镜像名称或镜像ID。如果镜像在本地不存在，Compose将会尝试拉取镜像
+    container_name: "web3"  #容器名称格式是：<项目名称><服务名称><序号>可以自定义项目名称、服务名称，但如果想完全控制容器的命名，可以使用标签指定
+    build: #服务除了可以基于指定的镜像，还可以基于一份Dockerfile，在使用up启动时执行构建任务，构建标签是build，可以指定Dockerfile所在文件夹的路径。Compose将会利用Dockerfile自动构建镜像，然后使用镜像启动服务容器
+      context: .  #设定上下文根目录
+      dockerfile: WebCore3/Dockerfile  #指定Dockerfile
+    ports:  #HOST:CONTAINER格式或者只是指定容器的端口
+      - 8803:80
+
+      
+  web:
+    image: dockercloud/hello-world
+    ports:
+      - 8080
+    networks:
+      - front-tier
+      - back-tier
+ 
+  redis:
+    image: redis
+    links:
+      - web
+    networks:
+      - back-tier
+ 
+  lb:
+    image: dockercloud/haproxy
+    ports:
+      - 80:80
+    links:
+      - web
+    networks:
+      - front-tier
+      - back-tier
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+ 
+networks:
+  front-tier:
+    driver: bridge
+  back-tier:
+    driver: bridge
+```
+
