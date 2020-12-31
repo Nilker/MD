@@ -72,6 +72,24 @@ Spring 底层 两个核心特性
 
 ​		事件传播；
 
-*FactoryBean*:也就是工厂 bean，我们通过 `getBean(id)` 获得是该工厂所产生的 Bean 的实例，而不是该 `FactoryBean` 的实例，功能貌似更像是一种代理
+*FactoryBean*:也就是工厂 bean，我们通过 `getBean(id)` 获得是该工厂所产生的 Bean 的实例，而不是该 `FactoryBean` 的实例，功能貌似更像是一种代理，是一个工厂Bean，可以生成某一个类型Bean实例，它最大的一个作用是：可以让我们自定义Bean的创建过程；
 
-​		
+```java
+public interface FactoryBean<T> {
+    //返回的对象实例
+    T getObject() throws Exception;
+    //Bean的类型
+    Class<?> getObjectType();
+    //true是单例，false是非单例  在Spring5.0中此方法利用了JDK1.8的新特性变成了default方法，返回true
+    boolean isSingleton();
+}
+```
+
+
+
+FactotyBean定义了Spring Bean的三个重要特性：是否单例，Bean类型，Bean实例；；列子：
+
+```java
+
+```
+
