@@ -1,0 +1,50 @@
+docker run -d --name=nginx-2  --net my --ip 172.19.0.2 --restart=always -v /host_mnt/d/vm-data/volume/nginx/config/2:/etc/nginx/conf.d/ nginx
+docker run -d --name=nginx-3  --net my --ip 172.19.0.3 --restart=always -v /host_mnt/d/vm-data/volume/nginx/config/3:/etc/nginx/conf.d/ nginx
+docker run -d --name=nginx-4  --net my --ip 172.19.0.4 --restart=always -v /host_mnt/d/vm-data/volume/nginx/config/4:/etc/nginx/conf.d/ nginx
+
+
+nginx-4	172.17.0.4/16	-	02:42:ac:11:00:04	
+nginx-3	172.17.0.3/16	-	02:42:ac:11:00:03	
+nginx-2	172.17.0.2/16	-	02:42:ac:11:00:02
+
+
+docker run -d --name=keepalived-2 --restart=always --privileged -v /host_mnt/d/vm-data/volume/keepalived/2:/etc/keepalived/ registry.cn-shenzhen.aliyuncs.com/zengql-release/keepalived:2.0.7
+docker run -d --name=keepalived-3 --restart=always --privileged -v /host_mnt/d/vm-data/volume/keepalived/3:/etc/keepalived/ registry.cn-shenzhen.aliyuncs.com/zengql-release/keepalived:2.0.7
+docker run -d --name=keepalived-4 --restart=always --privileged -v /host_mnt/d/vm-data/volume/keepalived/4:/etc/keepalived/ registry.cn-shenzhen.aliyuncs.com/zengql-release/keepalived:2.0.7
+
+docker run --net my --ip 172.19.0.22 --name consul-2 -d -p 8502:8500 -p 8300:8300 -p 8301:8301 -p 8302:8302 -p 8600:8600 consul agent -server -bootstrap-expect 2 -ui -bind=0.0.0.0 -client=0.0.0.0  
+docker run --net my --ip 172.19.0.33 --name consul-3 -d -p 8503:8500 consul agent -server -ui -join 172.19.0.22
+docker run --net my --ip 172.19.0.44 --name consul-4 -d -p 8504:8500 consul agent -server -ui -join consul-2
+
+
+
+
+
+docker run --name=consul-2 -d -p 8500:8500 consul -
+
+docker run -d --name=consul-2 --net=host --restart=always consul agent -server  -bootstrap-expect=2    -ui
+
+docker run --net my --ip 172.19.0.22 --name consul-2 -d -p 8502:8500 -p 8300:8300 -p 8301:8301 -p 8302:8302 -p 8600:8600 consul agent -server -bootstrap-expect 2 -ui -bind=0.0.0.0 -client=0.0.0.0  
+docker run --net my --ip 172.19.0.33 --name consul-3 -d -p 8503:8500 consul agent -server -ui -join 172.19.0.22
+docker run --net my --ip 172.19.0.44 --name consul-4 -d -p 8504:8500 consul agent -server -ui -join consul-2
+
+docker run --net my --ip 172.19.0.22 --name=consul-2 -d -p 8500:8500 consul
+docker run --net my --ip 172.19.0.33 --name=consul-3 -d  consul  -retry-join=172.19.0.22
+docker run --net my --ip 172.19.0.44 --name=consul-4 -d  consul  -retry-join=172.19.0.22
+
+配置第一个 consul 单机
+docker run --name consul1 -d -p 8500:8500 -p 8300:8300 -p 8301:8301 -p 8302:8302 -p 8600:8600 consul agent -server -bootstrap-expect 2 -ui -bind=0.0.0.0 -client=0.0.0.0  
+8500 http 端口，用于 http 接口和 Web ui
+8300 server rpc 端口，同一数据中心 consul server 之间通过该端口通信
+8301 serf lan 端口，同一数据中心 consul client 通过该端口通信
+8302 serf wan 端口，不同数据中心 consul server 通过该端口通信
+8600 dns 端口，用于服务发现
+-bbostrap-expect 2: 集群至少两台服务器，才能选举集群 leader
+-ui：运行 Web 控制台
+-bind： 监听网口，0.0.0.0 表示所有网口，如果不指定默认未 127.0.0.1，则无法和容器通信
+-client ： 限制某些网口可以访问
+
+作者：Hawkpool
+链接：https://ld246.com/article/1576201513877
+来源：链滴
+协议：CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0/
