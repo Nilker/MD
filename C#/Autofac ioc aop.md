@@ -7,15 +7,14 @@ Nuget 安装Autofac
 ### 构造函数注入(默认)
 
 ```c#
+var containerBuilder = new Autofac.ContainerBuilder();
+containerBuilder.RegisterType<XiaomiService>().As<IXiaomiService>();
+IContainer container = containerBuilder.Build();
 
-            var containerBuilder = new Autofac.ContainerBuilder();
-            containerBuilder.RegisterType<XiaomiService>().As<IXiaomiService>();
-            IContainer container = containerBuilder.Build();
+//解析
+var xiaomiService = container.Resolve<IXiaomiService>();
 
-            //解析
-            var xiaomiService = container.Resolve<IXiaomiService>();
-
-            xiaomiService.Open();
+xiaomiService.Open();
 ```
 
 ### 属性注入
@@ -238,6 +237,14 @@ public class AutowiredPropertySelector : Autofac.Core.IPropertySelector
    //具体实现类型
      [Autowird] public XiaomiService mi { get; set; }
      [Autowird] public XiaomiService2 mi2 { get; set; }
+   
+   or
+       
+   containerBuilder.RegisterType<XiaomiService>().Named<IXiaomiService>("xiaomi").SingleInstance();
+   containerBuilder.RegisterType<XiaomiService2>().Named<IXiaomiService>("xiaomi2").SingleInstance();
+   
+   
+   
    ```
 
    
@@ -263,7 +270,98 @@ public class AutowiredPropertySelector : Autofac.Core.IPropertySelector
 
 AOP切面编程：不改代码的前提下，在方法进入前，或 执行后，动态添加一些功能，如日志；
 
+- nuget：Castle.Core  + Autofact.Extras.DynamicProxy
 
+- 创建自定义aop ，在服务的抽象类上标记 
+
+  ```c#
+  public class CustomAutofacAop : Castle.DynamicProxy.IInterceptor
+      {
+          public void Intercept(IInvocation invocation)
+          {            
+   Console.WriteLine($"{invocation.InvocationTarget.ToString()}--->{invocation.Method.Name}--->执行方法前");
+  
+              //执行实例的 具体方法
+              invocation.Proceed();
+  
+   Console.WriteLine($"{invocation.InvocationTarget.ToString()}--->{invocation.Method.Name}--->执行方法后");
+          }
+      }
+  
+  
+   //aop 在当前接口生效
+  [Autofac.Extras.DynamicProxy.Intercept(typeof(aop.CustomAutofacAop))]
+  public interface IXiaomiService
+  {
+      void Open();
+  }
+  ```
+
+  ```c#
+   //Autofac 支持aop
+  containerBuilder.RegisterType(typeof(aop.CustomAutofacAop));
+  containerBuilder.RegisterType<XiaomiService>().As<IXiaoAiService>().EnableInterfaceInterceptors();//接口上的
+  ```
+
+- 标记在 实现类上  + 需要代理的方法 虚方法  virtual
+
+  ```c#
+   containerBuilder.RegisterType(typeof(aop.CustomAutofacAop));
+              containerBuilder.RegisterType<XiaomiService2>().As<IXiaomiService>().SingleInstance();
+              containerBuilder.RegisterType<XiaomiService>().As<IXiaomiService>()
+                  .SingleInstance()
+                  //.EnableInterfaceInterceptors();//接口上的
+                  .EnableClassInterceptors();
+  
+  
+  [Autofac.Extras.DynamicProxy.Intercept(typeof(aop.CustomAutofacAop))]
+  public class XiaomiService :IXiaomiService
+      
+   public virtual void Open()
+  {
+      Console.WriteLine("打开小爱音箱");
+  }
+  ```
+
+- aop 单个抽象多个实现
+
+  ```c#
+  containerBuilder.RegisterType<XiaomiService>().Named<IXiaomiService>("xiaomi").SingleInstance().EnableClassInterceptors();
+  containerBuilder.RegisterType<XiaomiService2>().Named<IXiaomiService>("xiaomi2").SingleInstance().EnableClassInterceptors();
+  
+  //autofac 容器上下文
+  private readonly IComponentContext _component = null;
+  //构造函数注入上下文
+  public ValuesController(Autofac.IComponentContext context)
+  {
+      _component = context;
+  }
+  
+  or
+  //属性注入 上下文
+  /// <summary>
+  /// autofac 容器上下文
+  /// </summary>
+  [Autowird]  
+  public IComponentContext cc { get; set; }
+  
+  
+  
+  [HttpGet]
+  public IEnumerable<string> Get()
+  {
+      IXiaomiService mi1=  _component.ResolveNamed<IXiaomiService>("xiaomi");
+      IXiaomiService mi2=  _component.ResolveNamed<IXiaomiService>("xiaomi2");
+  
+      mi1.Open();
+      mi2.Open();
+  
+      XiaomiService.Open();
+      return new string[] { "value1", "value2" };
+  }
+  ```
+
+  
 
 
 
