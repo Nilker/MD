@@ -1,2 +1,13 @@
 C#/异步编程/Eg/TT/obj/Debug/netcoreapp3.1/apphost.exe
 C#/异步编程/Eg/TT/obj/Debug/netcoreapp3.1/TT.assets.cache
+.vscode/*
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
