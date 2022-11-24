@@ -28,3 +28,5 @@ async/await 是C# 5.0 退出的异步代码编程模型，其本质是编译为*
 
 
 ![image-20201231105121472](img/TaskRun.png)
+![多线程，异步 Task，Async Await (2)](https://user-images.githubusercontent.com/8567436/203745247-83c71fea-817c-46ee-bd67-a2fc47ac1890.png)
+https://blog.csdn.net/sD7O95O/article/details/108288859
